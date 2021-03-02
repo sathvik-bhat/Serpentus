@@ -5,12 +5,12 @@ pygame.init()
 
 # screen
 width = 800
-height = 600
+height = 448
 size = (width, height)
 screen = pygame.display.set_mode(size)
 
 # Food
-food_position = [random.randint(1, 800), random.randint(1, 600)]
+food_position = [random.randint(1, width/16 - 1) * 16, random.randint(1, height/16 - 1) *16]
 food_spawn = True
 
 # snake
@@ -143,16 +143,17 @@ while run:
 
     display_snake(snake)
 
-    pygame.draw.rect(screen, orange, pygame.Rect(food_position[0], food_position[1], 10, 10))
+    pygame.draw.rect(screen, orange, pygame.Rect(food_position[0], food_position[1], 16, 16))
 
     if display_snake(snake) == food_position:
         score.update_score()
+        snake = add_new(snake)
         food_spawn = False  # It removes the food from the board
     if food_spawn is False:  # When a food is taken it will respawn randomly
-        food_position = [random.randint( 1, 800) , random.randint(1, 600) ]
+        food_position = [random.randint( 1, width/16 - 1) *16 , random.randint(1, height/16 - 1) *16 ]
     food_spawn = True  # It will set the food to True again, to keep the cycle
 
-    pygame.draw.rect(screen, orange, pygame.Rect(food_position[0], food_position[1], 10, 10))
+    pygame.draw.rect(screen, orange, pygame.Rect(food_position[0], food_position[1], 16, 16))
     screen.blit(score.text, score.textRect)
 
     pygame.display.update()
