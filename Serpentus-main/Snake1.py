@@ -116,7 +116,7 @@ class Snake():
             pygame.draw.rect(screen, white, pygame.Rect(i[0], i[1], 16, 16))
         return coordinates
 
-    def death(self,run):
+    def death(self):
         count=0
         for i in range(len(self.body)-1):
             if(self.body[-1]==self.body[i]):
@@ -131,8 +131,7 @@ class Snake():
             screen.blit(overt,(250,180))
             pygame.display.update()
             time.sleep(3)
-            run=False
-        return run
+            menu()
 
 class Score():
     # score_total = 0
@@ -173,17 +172,15 @@ class Food():
         pygame.draw.rect(screen, orange, pygame.Rect(self.food_position[0], self.food_position[1], 16, 16))
 
 
-mixer.music.load('bgm.wav')
-mixer.music.play(-1)
+# mixer.music.load('bgm.wav')
+# mixer.music.play(-1)
 
 def heading():
     f=pygame.font.Font('valianttimesexpand.ttf',80)
     headin=f.render('SERPENTUS',True,(0,0,0))
     screen.blit(headin,(250,20))
 
-snake=Snake()
-score = Score()
-food = Food()
+
 
 def button(msg,x,y,w,h,ic,ac,action=None):
     mouse=pygame.mouse.get_pos()
@@ -194,7 +191,7 @@ def button(msg,x,y,w,h,ic,ac,action=None):
         if click[0] and action!= None:
             if action=="play":
                 running()
-                snake=Snake()
+                # snake=Snake()
             elif action=="quit":
                 pygame.quit()
                 quit()
@@ -208,9 +205,10 @@ def button(msg,x,y,w,h,ic,ac,action=None):
     screen.blit(textsurf,textrect)
 
 def menu():
+    mixer.music.load('bgm.wav')
+    mixer.music.play(-1)
     intro=True
     while intro:
-        
         for event in pygame.event.get():
             if event.type==pygame.QUIT:
                 pygame.quit()
@@ -226,6 +224,9 @@ def menu():
         pygame.display.update()
 
 def running():
+    snake=Snake()
+    score = Score()
+    food = Food()
     run = True
     while run:
             
@@ -253,7 +254,7 @@ def running():
         score.display()
             
         snake.display()
-        run=snake.death(run)
+        snake.death()
 
         pygame.display.update()
 
