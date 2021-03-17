@@ -12,18 +12,18 @@ size = (width, height)
 screen = pygame.display.set_mode(size)
 
 # add food images
-apple = pygame.image.load('./images/apple.png')
-plum = pygame.image.load('./images/plum.png')
-oranges = pygame.image.load('./images/orange.png')
-strawberry = pygame.image.load('./images/strawberry.png')
+apple = pygame.image.load(r'./images/apple1.png')
+plum = pygame.image.load(r'./images/plum1.png')
+oranges = pygame.image.load(r'./images/orange1.png')
+strawberry = pygame.image.load(r'./images/strawberry1.png')
 
 orange = pygame.Color("orange")
 black = pygame.Color("black")
 
 # add sounds
 eat = pygame.mixer.Sound('./sounds/eat.wav')
-music = pygame.mixer.music.load('./sounds/music.mp3')
-pygame.mixer.music.play(-1)
+# music = pygame.mixer.music.load('./sounds/music.mp3')
+# pygame.mixer.music.play(-1)
 
 from os import path
 
