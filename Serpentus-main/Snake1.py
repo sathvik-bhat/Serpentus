@@ -127,6 +127,7 @@ class Snake():
 
     def display(self):  # Displays the snake on the screen
         snake=self.body
+
         for i in snake:
             coordinates = [i[0], i[1]]
             pygame.draw.rect(screen, white, pygame.Rect(i[0], i[1], 16, 16))
@@ -248,20 +249,20 @@ def speed():
 
         if(Snake.speed==0.2):
             # print(Snake.speed)
-            button("Slow",350,150,50,35,dark_green,dark_green,"slow")
-            button("Medium",330,200,90,35,white,dark_green,"medium")
-            button("Fast",350,250,50,35,white,dark_green,"fast")
+            button("Slow",475,150,50,35,dark_green,dark_green,"slow")
+            button("Medium",460,200,90,35,white,dark_green,"medium")
+            button("Fast",475,250,50,35,white,dark_green,"fast")
         elif(Snake.speed==0.3):
             # print(Snake.speed)
-            button("Slow",350,150,50,35,white,dark_green,"slow")
-            button("Medium",330,200,90,35,dark_green,dark_green,"medium")
-            button("Fast",350,250,50,35,white,dark_green,"fast")
+            button("Slow",475,150,50,35,white,dark_green,"slow")
+            button("Medium",460,200,90,35,dark_green,dark_green,"medium")
+            button("Fast",475,250,50,35,white,dark_green,"fast")
         elif(Snake.speed==0.4):
-            button("Slow",350,150,50,35,white,dark_green,"slow")
-            button("Medium",330,200,90,35,white,dark_green,"medium")
-            button("Fast",350,250,50,35,dark_green,dark_green,"fast")
+            button("Slow",475,150,50,35,white,dark_green,"slow")
+            button("Medium",460,200,90,35,white,dark_green,"medium")
+            button("Fast",475,250,50,35,dark_green,dark_green,"fast")
 
-        button("Back",350,300,50,35,white,dark_green,"back")
+        button("Back",475,300,50,35,white,dark_green,"back")
         
         pygame.display.update()
 
@@ -297,10 +298,10 @@ def menu():
         screen.blit(bg,(0,0))
         heading()
 
-        button("Play",465,150,50,35,white,dark_green,"play")
-        button("Quit",465,200,50,35,white,dark_green,"quit")
-        button("Speed",450,250,80,35,white,dark_green,"speed")
-        button("Modes",450,300,80,35,white,dark_green,"modes")
+        button("Play",355,150,50,35,white,dark_green,"play")
+        button("Modes",340,200,80,35,white,dark_green,"modes")
+        button("Speed",340,250,80,35,white,dark_green,"speed")
+        button("Quit",355,300,50,35,white,dark_green,"quit")
         
         pygame.display.update()
 
