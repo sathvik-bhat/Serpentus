@@ -10,13 +10,12 @@ height = 448
 size = (width, height)
 screen = pygame.display.set_mode(size)
 
-orange = pygame.Color("orange")
+#colors
+red = pygame.Color("red")
 black= pygame.Color("black")
 green=(0,180,0)
 dark_green=(0,255,0)
 white=(255,255,255)
-
-borders=False
 
 class Snake():
     # snake body is represented as
@@ -31,7 +30,6 @@ class Snake():
         self.head = [(width+32)/2, (height+32)/2]     
         self.tail = [(width)/2, (height+32)/2]      
         self.body = [self.tail, self.head]  
-        # self.speed = speed
         self.x_inc = 0
         self.y_inc = 0
         self.prev_dir = None
@@ -100,7 +98,7 @@ class Snake():
 
     def boundary(self):  # Snake emerges from opposite side if it goes out of the boundary
         snake=self.body
-        if(borders==False):
+        if(game.borders==False):
             for point in snake:
                 if point[0] >= width:
                     point[0] = 0
@@ -122,8 +120,7 @@ class Snake():
                     pygame.display.update()
                     time.sleep(3)
                     mixer.music.play(-1)
-                    menu()
-
+                    game.menu()
 
     def display(self):  # Displays the snake on the screen
         snake=self.body
@@ -146,10 +143,13 @@ class Snake():
             over=pygame.font.Font('valianttimesexpand.ttf',80)
             overt=over.render('GAME OVER',True,(220,20,60))
             screen.blit(overt,(250,180))
+            h_score = pygame.font.Font('valianttimes3d.ttf', 80)
+            h_score1 = h_score.render('HIGH SCORE: ' + str(score.HighScore()), True, (0, 0, 255))
+            screen.blit(h_score1, (50, 50))
             pygame.display.update()
             time.sleep(3)
             mixer.music.play(-1)
-            menu()
+            game.menu()
 
 class Score():
 
@@ -157,7 +157,14 @@ class Score():
         self.total=0
 
     def update_score(self):
-        self.total += 1
+        if (food.respawn() == 1):
+            self.total += 1
+        elif (food.respawn() == 2):
+            self.total += 2
+        elif (food.respawn() == 3):
+            self.total += 3
+        elif (food.respawn() == 4):
+            self.total += 10
 
     def display(self):
         self.font = pygame.font.Font('freesansbold.ttf', 20)
@@ -166,16 +173,41 @@ class Score():
         self.textRect.center = (40, 10)
         screen.blit(self.text, self.textRect)
 
+    def HighScore(self):
+        # opening file which stores highscores
+        with open('./highscore.txt', 'r') as f:
+            try:
+                highscore = int(f.read())
+            except:
+                highscore = 0
+
+        # writing new highscore into file
+        if (self.total >= highscore):
+            highscore = self.total
+            with open('./highscore.txt', 'w') as f:
+                f.write(str(highscore))
+
+        return highscore
+
 class Food():
+    # loading food images
+    apple = pygame.image.load('./images/apple.png')
+    plum = pygame.image.load('./images/plum.png')
+    oranges = pygame.image.load('./images/orange.png')
+    strawberry = pygame.image.load('./images/strawberry.png')
+
     def __init__(self):
         self.food_position=None
         self.food_spawn=False
 
     def respawn(self):
         if self.food_spawn is False:  # When a food is taken it will respawn randomly
+            self.weighted_list = random.choices([1, 2, 3, 4], weights=(40, 30, 20, 10), k=1)  # implementing different foods with different probabilities of occuring. fruit with lower points has a higher chance of occuring
+            self.n = self.weighted_list[0]
             self.food_position = [random.randint( 1, width/16 - 1) *16 , random.randint(1, height/16 - 1) *16 ]
             self.food_spawn = True  # It will set the food to True again, to keep the cycle
-    
+        return self.n
+
     def eat(self,snake,score):
         if snake.body[-1] == self.food_position :
             eat_sound=mixer.Sound('eat.wav')
@@ -185,7 +217,15 @@ class Food():
             self.food_spawn = False  # It removes the food from the board
             
     def display(self):
-        pygame.draw.rect(screen, orange, pygame.Rect(self.food_position[0], self.food_position[1], 16, 16))
+        if (self.n == 1):
+            screen.blit(Food.apple, (self.food_position))
+        elif (self.n == 2):
+            screen.blit(Food.oranges, (self.food_position))
+        elif (self.n == 3):
+            screen.blit(Food.plum, (self.food_position))
+        elif (self.n == 4):
+            screen.blit(Food.strawberry, (self.food_position))
+
 
 def heading():
     f=pygame.font.Font('valianttimesexpand.ttf',80)
@@ -201,145 +241,177 @@ def button(msg,x,y,w,h,ic,ac,action=None):
         pygame.draw.rect(screen, ac,(x,y,w,h))
         if click[0] and action!= None:
             if action=="play":
-                running()
+                game.play()
             if action=="speed":
-                speed()
+                game.speed()
             if(action=="slow"):
                 Snake.speed = 0.2
-                menu()
+                game.menu()
             if(action=="medium"):
                 Snake.speed = 0.3
-                menu()
+                game.menu()
             if(action=="fast"):
                 Snake.speed = 0.4
-                menu()
+                game.menu()
             if(action=="back"):
-                menu()
+                game.menu()
             if(action=="modes"):
-                modes()
+                game.modes()
             if(action=="with borders"):
-                borders=True
-                menu()
+                game.borders=True
+                game.menu()
             if(action=="without borders"):
-                borders=False
-                menu()
+                game.borders=False
+                game.menu()
+            if(action=="pause"):
+                game.pause=True
+            if(action=="resume"):
+                game.pause=False
             if action=="quit":
                 pygame.quit()
                 quit()
     else:
         pygame.draw.rect(screen, ic,(x,y,w,h))
     
-    textg=pygame.font.Font('Pacifico-Regular.ttf', 20)
-    textsurf=textg.render(msg,True,orange)
+    textg=pygame.font.Font('Chango-Regular.ttf', 20)
+    textsurf=textg.render(msg,True,red)
     textrect=textsurf.get_rect()
     textrect.center=((x+(w/2)), (y+(h/2)))
     screen.blit(textsurf,textrect)
 
-def speed():
+class game():
+    borders=False
+    pause=False
 
-    while True:
-        for event in pygame.event.get():
-            if event.type==pygame.QUIT:
-                pygame.quit()
-                quit()
+    @staticmethod
+    def begin():
+        mixer.music.load('bgm.wav')
+        mixer.music.play(-1)    
+        game.menu()
 
-        bg=pygame.image.load('bg2.png')
-        screen.blit(bg,(0,0))
-        heading()
+    @staticmethod
+    def play():
+        global snake
+        global score
+        global food
+        snake = Snake()
+        food = Food()
+        score = Score()
+        run = True
+        while run:
+                
+            bgg=pygame.image.load('bgg1.png')
+            screen.blit(bgg,(0,0))
 
-        if(Snake.speed==0.2):
-            # print(Snake.speed)
-            button("Slow",475,150,50,35,dark_green,dark_green,"slow")
-            button("Medium",460,200,90,35,white,dark_green,"medium")
-            button("Fast",475,250,50,35,white,dark_green,"fast")
-        elif(Snake.speed==0.3):
-            # print(Snake.speed)
-            button("Slow",475,150,50,35,white,dark_green,"slow")
-            button("Medium",460,200,90,35,dark_green,dark_green,"medium")
-            button("Fast",475,250,50,35,white,dark_green,"fast")
-        elif(Snake.speed==0.4):
-            button("Slow",475,150,50,35,white,dark_green,"slow")
-            button("Medium",460,200,90,35,white,dark_green,"medium")
-            button("Fast",475,250,50,35,dark_green,dark_green,"fast")
+            game.Pause()
 
-        button("Back",475,300,50,35,white,dark_green,"back")
+            score.display()
+                
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    run = False
+                    quit()
+                elif event.type == pygame.KEYDOWN:
+                    snake.movement(event)
+                
+            snake.move_one_step()
+
+            snake.boundary()
+                
+            food.eat(snake,score)
+            food.respawn()
+            food.display()
+                
+            score.display()
+                
+            snake.display()
+            snake.death()
+
+            pygame.display.update()
+
+    @staticmethod
+    def speed():
+
+        while True:
+            for event in pygame.event.get():
+                if event.type==pygame.QUIT:
+                    pygame.quit()
+                    quit()
+
+            bg=pygame.image.load('bg2.png')
+            screen.blit(bg,(0,0))
+            heading()
+
+            if(Snake.speed==0.2):
+                button("Slow",520,150,70,35,dark_green,dark_green,"slow")
+                button("Medium",500,200,120,35,white,dark_green,"medium")
+                button("Fast",520,250,70,35,white,dark_green,"fast")
+            elif(Snake.speed==0.3):
+                button("Slow",520,150,70,35,white,dark_green,"slow")
+                button("Medium",500,200,120,35,dark_green,dark_green,"medium")
+                button("Fast",520,250,70,35,white,dark_green,"fast")
+            elif(Snake.speed==0.4):
+                button("Slow",520,150,70,35,white,dark_green,"slow")
+                button("Medium",500,200,120,35,white,dark_green,"medium")
+                button("Fast",520,250,70,35,dark_green,dark_green,"fast")
+
+            button("Back",520,300,70,35,white,dark_green,"back")
+            
+            pygame.display.update()
+
+    @staticmethod
+    def modes():
         
-        pygame.display.update()
+        while True:
+            global boundary
+            for event in pygame.event.get():
+                if event.type==pygame.QUIT:
+                    pygame.quit()
+                    quit()
+            bg=pygame.image.load('bg2.png')
+            screen.blit(bg,(0,0))
+            heading()
 
-def modes():
-     
-    while True:
-        global boundary
-        for event in pygame.event.get():
-            if event.type==pygame.QUIT:
-                pygame.quit()
-                quit()
-        bg=pygame.image.load('bg2.png')
-        screen.blit(bg,(0,0))
-        heading()
+            if(game.borders==True):
+                button("With borders",150,150,200,35,dark_green,dark_green,"with borders")
+                button("Without borders",125,200,250,35,white,dark_green,"without borders") 
+            else:
+                button("With borders",150,150,200,35,white,dark_green,"with borders")
+                button("Without borders",125,200,250,35,dark_green,dark_green,"without borders")
+            button("Back",200,250,75,35,white,dark_green,"back")
+            pygame.display.update()
 
-        if(borders==True):
-            button("With borders",150,150,150,35,dark_green,dark_green,"with borders")
-            button("Without borders",125,200,200,35,white,dark_green,"without borders") 
-        else:
-            button("With borders",150,150,150,35,white,dark_green,"with borders")
-            button("Without borders",125,200,200,35,dark_green,dark_green,"without borders")
-        button("back",200,250,50,35,white,dark_green,"back")
-        pygame.display.update()
+    @staticmethod
+    def menu():
 
-def menu():
+        while True:
+            for event in pygame.event.get():
+                if event.type==pygame.QUIT:
+                    pygame.quit()
+                    quit()
+            bg=pygame.image.load('bg2.png')
+            screen.blit(bg,(0,0))
+            heading()
 
-    while True:
-        for event in pygame.event.get():
-            if event.type==pygame.QUIT:
-                pygame.quit()
-                quit()
-        bg=pygame.image.load('bg2.png')
-        screen.blit(bg,(0,0))
-        heading()
-
-        button("Play",355,150,50,35,white,dark_green,"play")
-        button("Modes",340,200,80,35,white,dark_green,"modes")
-        button("Speed",340,250,80,35,white,dark_green,"speed")
-        button("Quit",355,300,50,35,white,dark_green,"quit")
-        
-        pygame.display.update()
-
-def running():
-    snake= Snake()
-    score = Score()
-    food = Food()
-    run = True
-    while run:
+            button("Play",405,150,70,35,white,dark_green,"play")
+            button("Modes",390,200,100,35,white,dark_green,"modes")
+            button("Speed",390,250,100,35,white,dark_green,"speed")
+            button("Quit",405,300,70,35,white,dark_green,"quit")
             
-        bgg=pygame.image.load('bgg1.png')
-        screen.blit(bgg,(0,0))
+            pygame.display.update()
 
-        score.display()
+    @staticmethod
+    def Pause():
+        if(game.pause==False):
+            button("Pause",width-100,0,100,20,white,dark_green,"pause")
             
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-                quit()
-            elif event.type == pygame.KEYDOWN:
-                snake.movement(event)
-            
-        snake.move_one_step()
 
-        snake.boundary()
-            
-        food.eat(snake,score)
-        food.respawn()
-        food.display()
-            
-        score.display()
-            
-        snake.display()
-        snake.death()
+        if(game.pause==True):
+            button("Resume",width-220,0,120,20,white,dark_green,"resume")
+            snake.x_inc=0
+            snake.y_inc=0
 
-        pygame.display.update()
 
- 
-mixer.music.load('bgm.wav')
-mixer.music.play(-1)
-menu()
+
+
+game.begin()
