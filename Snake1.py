@@ -186,7 +186,7 @@ class Score():
         self.font = pygame.font.Font('./Fonts/FreeSansBold.ttf', 20)
         self.text=self.font.render('Score '+str(self.total), True, (0, 255, 0), (0, 0, 0))
         self.textRect = self.text.get_rect()
-        self.textRect.center = (40, 10)
+        self.textRect.center = (50, 10)
         screen.blit(self.text, self.textRect)
 
     def HighScore(self):
@@ -245,10 +245,10 @@ class Food():
             screen.blit(Food.strawberry, (self.food_position))
 
 
-def heading():
-    f=pygame.font.Font('./Fonts/valianttimesexpand.ttf',80)
-    headin=f.render('SERPENTUS',True,(0,0,0))
-    screen.blit(headin,(250,20))
+def heading(str):
+    f=pygame.font.Font('./Fonts/Chopsic-K6Dp.ttf',80)
+    headin=f.render(str,True,(255,55,155))
+    screen.blit(headin,(120,-10))
 
 def button(msg,x,y,w,h,ic,ac,action=None):
     global borders
@@ -360,7 +360,7 @@ class game():
 
             bg=pygame.image.load('./Images/bg2.png')
             screen.blit(bg,(0,0))
-            heading()
+            heading("                    SPEED")
 
             if(Snake.speed==0.2):
                 button("Slow",520,150,70,35,dark_green,dark_green,"slow")
@@ -390,7 +390,7 @@ class game():
                     quit()
             bg=pygame.image.load('./Images/bg2.png')
             screen.blit(bg,(0,0))
-            heading()
+            heading("MODES")
 
             if(game.borders==True):
                 button("With borders",150,150,200,35,dark_green,dark_green,"with borders")
@@ -411,7 +411,7 @@ class game():
                     quit()
             bg=pygame.image.load('./Images/bg2.png')
             screen.blit(bg,(0,0))
-            heading()
+            heading("SERPENTUS")
 
             button("Play",405,150,70,35,white,dark_green,"play")
             button("Modes",390,200,100,35,white,dark_green,"modes")
