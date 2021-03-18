@@ -221,6 +221,8 @@ class Food():
             self.weighted_list = random.choices([1, 2, 3, 4], weights=(40, 30, 20, 10), k=1)  # implementing different foods with different probabilities of occuring. fruit with lower points has a higher chance of occuring
             self.n = self.weighted_list[0]
             self.food_position = [random.randint( 1, width/16 - 1) *16 , random.randint(1, height/16 - 1) *16 ]
+            while (self.food_position in snake.add_new()):
+                self.food_position = [random.randint(1, width / 16 - 1) * 16, random.randint(1, height / 16 - 1) * 16]
             self.food_spawn = True  # It will set the food to True again, to keep the cycle
         return self.n
 
