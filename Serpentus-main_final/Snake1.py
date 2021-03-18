@@ -16,12 +16,6 @@ green=(0,180,0)
 dark_green=(0,255,0)
 white=(255,255,255)
 
-# loading food images
-apple = pygame.image.load('./images/apple.png')
-plum = pygame.image.load('./images/plum.png')
-oranges = pygame.image.load('./images/orange.png')
-strawberry = pygame.image.load('./images/strawberry.png')
-
 borders=False
 
 class Snake():
@@ -152,9 +146,6 @@ class Snake():
             over=pygame.font.Font('valianttimesexpand.ttf',80)
             overt=over.render('GAME OVER',True,(220,20,60))
             screen.blit(overt,(250,180))
-            h_score = pygame.font.Font('valianttimes3d.ttf', 80)
-            h_score1 = h_score.render('HIGH SCORE: ' + str(score.HighScore()), True, (0, 0, 255))
-            screen.blit(h_score1, (50, 50))
             pygame.display.update()
             time.sleep(3)
             mixer.music.play(-1)
@@ -166,14 +157,7 @@ class Score():
         self.total=0
 
     def update_score(self):
-        if (food.respawn() == 1):
-            self.total += 1
-        elif (food.respawn() == 2):
-            self.total += 2
-        elif (food.respawn() == 3):
-            self.total += 3
-        elif (food.respawn() == 4):
-            self.total += 10
+        self.total += 1
 
     def display(self):
         self.font = pygame.font.Font('freesansbold.ttf', 20)
@@ -182,22 +166,6 @@ class Score():
         self.textRect.center = (40, 10)
         screen.blit(self.text, self.textRect)
 
-    def HighScore(self):
-        # opening file which stores highscores
-        with open('./highscore.txt', 'r') as f:
-            try:
-                highscore = int(f.read())
-            except:
-                highscore = 0
-
-        # writing new highscore into file
-        if (self.total >= highscore):
-            highscore = self.total
-            with open('./highscore.txt', 'w') as f:
-                f.write(str(highscore))
-
-        return highscore
-
 class Food():
     def __init__(self):
         self.food_position=None
@@ -205,12 +173,9 @@ class Food():
 
     def respawn(self):
         if self.food_spawn is False:  # When a food is taken it will respawn randomly
-            self.weighted_list = random.choices([1, 2, 3, 4], weights=(40, 30, 20, 10), k=1)  # implementing different foods with different probabilities of occuring. fruit with lower points has a higher chance of occuring
-            self.n = self.weighted_list[0]
             self.food_position = [random.randint( 1, width/16 - 1) *16 , random.randint(1, height/16 - 1) *16 ]
             self.food_spawn = True  # It will set the food to True again, to keep the cycle
-        return self.n
-
+    
     def eat(self,snake,score):
         if snake.body[-1] == self.food_position :
             eat_sound=mixer.Sound('eat.wav')
@@ -220,14 +185,7 @@ class Food():
             self.food_spawn = False  # It removes the food from the board
             
     def display(self):
-        if (self.n == 1):
-            screen.blit(apple, (self.food_position))
-        elif (self.n == 2):
-            screen.blit(oranges, (self.food_position))
-        elif (self.n == 3):
-            screen.blit(plum, (self.food_position))
-        elif (self.n == 4):
-            screen.blit(strawberry, (self.food_position))
+        pygame.draw.rect(screen, orange, pygame.Rect(self.food_position[0], self.food_position[1], 16, 16))
 
 def heading():
     f=pygame.font.Font('valianttimesexpand.ttf',80)
@@ -271,7 +229,7 @@ def button(msg,x,y,w,h,ic,ac,action=None):
     else:
         pygame.draw.rect(screen, ic,(x,y,w,h))
     
-    textg=pygame.font.Font('freesansbold.ttf', 20)
+    textg=pygame.font.Font('Pacifico-Regular.ttf', 20)
     textsurf=textg.render(msg,True,orange)
     textrect=textsurf.get_rect()
     textrect.center=((x+(w/2)), (y+(h/2)))
@@ -321,12 +279,12 @@ def modes():
         heading()
 
         if(borders==True):
-            button("With borders",200,150,150,35,dark_green,dark_green,"with borders")
-            button("Without borders",175,200,200,35,white,dark_green,"without borders") 
+            button("With borders",150,150,150,35,dark_green,dark_green,"with borders")
+            button("Without borders",125,200,200,35,white,dark_green,"without borders") 
         else:
-            button("With borders",200,150,150,35,white,dark_green,"with borders")
-            button("Without borders",175,200,200,35,dark_green,dark_green,"without borders")
-        button("back",250,250,50,35,white,dark_green,"back")
+            button("With borders",150,150,150,35,white,dark_green,"with borders")
+            button("Without borders",125,200,200,35,dark_green,dark_green,"without borders")
+        button("back",200,250,50,35,white,dark_green,"back")
         pygame.display.update()
 
 def menu():
@@ -348,12 +306,9 @@ def menu():
         pygame.display.update()
 
 def running():
-    global snake
-    global score
-    global food
-    snake = Snake()
-    food = Food()
+    snake= Snake()
     score = Score()
+    food = Food()
     run = True
     while run:
             
