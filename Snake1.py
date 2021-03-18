@@ -117,9 +117,9 @@ class Snake():
             for point in snake:
                 if(point[0]>=width or point[0]<= -16 or point[1]>=height or point[1]<=-16):
                     mixer.music.pause()
-                    go_sound=mixer.Sound("go.wav")
+                    go_sound=mixer.Sound("./Sounds/go.wav")
                     go_sound.play()
-                    over=pygame.font.Font('valianttimesexpand.ttf',80)
+                    over=pygame.font.Font('./Fonts/valianttimesexpand.ttf',80)
                     overt=over.render('GAME OVER',True,(220,20,60))
                     screen.blit(overt,(250,180))
                     pygame.display.update()
@@ -154,12 +154,12 @@ class Snake():
 
         if(count!=0):
             mixer.music.pause()
-            go_sound=mixer.Sound("go.wav")
+            go_sound=mixer.Sound("./Sounds/go.wav")
             go_sound.play()
-            over=pygame.font.Font('valianttimesexpand.ttf',80)
+            over=pygame.font.Font('./Fonts/valianttimesexpand.ttf',80)
             overt=over.render('GAME OVER',True,(220,20,60))
             screen.blit(overt,(250,180))
-            h_score = pygame.font.Font('valianttimes3d.ttf', 80)
+            h_score = pygame.font.Font('./Fonts/valianttimes3d.ttf', 80)
             h_score1 = h_score.render('HIGH SCORE: ' + str(score.HighScore()), True, (0, 0, 255))
             screen.blit(h_score1, (50, 50))
             pygame.display.update()
@@ -183,7 +183,7 @@ class Score():
             self.total += 10
 
     def display(self):
-        self.font = pygame.font.Font('freesansbold.ttf', 20)
+        self.font = pygame.font.Font('./Fonts/FreeSansBold.ttf', 20)
         self.text=self.font.render('Score '+str(self.total), True, (0, 255, 0), (0, 0, 0))
         self.textRect = self.text.get_rect()
         self.textRect.center = (40, 10)
@@ -207,10 +207,10 @@ class Score():
 
 class Food():
     # loading food images
-    apple = pygame.image.load('./images/apple.png')
-    plum = pygame.image.load('./images/plum.png')
-    oranges = pygame.image.load('./images/orange.png')
-    strawberry = pygame.image.load('./images/strawberry.png')
+    apple = pygame.image.load('./Images/apple.png')
+    plum = pygame.image.load('./Images/plum.png')
+    oranges = pygame.image.load('./Images/orange.png')
+    strawberry = pygame.image.load('./Images/strawberry.png')
 
     def __init__(self):
         self.food_position=None
@@ -226,7 +226,7 @@ class Food():
 
     def eat(self,snake,score):
         if snake.body[-1] == self.food_position :
-            eat_sound=mixer.Sound('eat.wav')
+            eat_sound=mixer.Sound('./Sounds/eat.wav')
             eat_sound.play()
             score.update_score()
             snake.add_new()
@@ -244,7 +244,7 @@ class Food():
 
 
 def heading():
-    f=pygame.font.Font('valianttimesexpand.ttf',80)
+    f=pygame.font.Font('./Fonts/valianttimesexpand.ttf',80)
     headin=f.render('SERPENTUS',True,(0,0,0))
     screen.blit(headin,(250,20))
 
@@ -289,7 +289,7 @@ def button(msg,x,y,w,h,ic,ac,action=None):
     else:
         pygame.draw.rect(screen, ic,(x,y,w,h))
     
-    textg=pygame.font.Font('Chango-Regular.ttf', 20)
+    textg=pygame.font.Font('./Fonts/Chango-Regular.ttf', 20)
     textsurf=textg.render(msg,True,red)
     textrect=textsurf.get_rect()
     textrect.center=((x+(w/2)), (y+(h/2)))
@@ -301,7 +301,7 @@ class game():
 
     @staticmethod
     def begin():
-        mixer.music.load('bgm.wav')
+        mixer.music.load('./Sounds/bgm.wav')
         mixer.music.play(-1)    
         game.menu()
 
@@ -356,7 +356,7 @@ class game():
                     pygame.quit()
                     quit()
 
-            bg=pygame.image.load('bg2.png')
+            bg=pygame.image.load('./Images/bg2.png')
             screen.blit(bg,(0,0))
             heading()
 
@@ -386,7 +386,7 @@ class game():
                 if event.type==pygame.QUIT:
                     pygame.quit()
                     quit()
-            bg=pygame.image.load('bg2.png')
+            bg=pygame.image.load('./Images/bg2.png')
             screen.blit(bg,(0,0))
             heading()
 
@@ -407,7 +407,7 @@ class game():
                 if event.type==pygame.QUIT:
                     pygame.quit()
                     quit()
-            bg=pygame.image.load('bg2.png')
+            bg=pygame.image.load('./Images/bg2.png')
             screen.blit(bg,(0,0))
             heading()
 
@@ -423,13 +423,9 @@ class game():
         if(game.pause==False):
             button("Pause",width-100,0,100,20,white,dark_green,"pause")
             
-
         if(game.pause==True):
             button("Resume",width-220,0,120,20,white,dark_green,"resume")
             snake.x_inc=0
             snake.y_inc=0
-
-
-
 
 game.begin()
