@@ -154,7 +154,7 @@ class Score():
 
     def update_score(self):
         if (food.respawn() == 1):
-            self.total += 30
+            self.total += 1
         elif (food.respawn() == 2):
             self.total += 2
         elif (food.respawn() == 3):
