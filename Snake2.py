@@ -16,11 +16,10 @@ green=(0,180,0)
 dark_green=(0,255,0)
 white=(255,255,255)
 blue=(0,0,255)
-light_red=(100,0,0)
-dark_red=(255,0,0)
-light_blue=(0,0,100)
-dark_blue=(0,0,255)
-bgm='./Sounds/bgm.wav'
+light_red=(0,53,0)
+dark_red=(53,0,0)
+light_blue=(51,0,25)
+dark_blue=(0,0,153)
 
 
 class Snake():
@@ -155,7 +154,7 @@ class Score():
 
     def update_score(self):
         if (food.respawn() == 1):
-            self.total += 1
+            self.total += 30
         elif (food.respawn() == 2):
             self.total += 2
         elif (food.respawn() == 3):
@@ -381,7 +380,6 @@ class Menu():
             
             Menu.button("Back",520,70,70,35,white,dark_green,"back")
             
-
             pygame.display.update()
 
 
@@ -450,7 +448,7 @@ class Game():
     @staticmethod
     def begin():
         pygame.init()
-        mixer.music.load(bgm)
+        mixer.music.load(Game.bgm)
         mixer.music.play(-1)
         Menu.main()
 
@@ -522,6 +520,7 @@ class Game():
         time.sleep(3)
         mixer.music.play(-1)
         Menu.main()
+
 
 if(__name__ == '__main__'):
     Game.begin()
