@@ -56,7 +56,7 @@ class Snake():
                 return 'l'
 
     def movement(self, event):   # Identifies key inputs and changes x_inc and y_inc
-        if(game.pause==False):
+        if(Game.pause==False):
             if event.key == pygame.K_LEFT:
                 if(self.prev_dir!='r'):
                     self.x_inc = -16
@@ -105,7 +105,7 @@ class Snake():
 
     def boundary(self):  # Snake emerges from opposite side if it goes out of the boundary
         snake=self.body
-        if(game.borders==False):
+        if(Game.borders==False):
             for point in snake:
                 if point[0] >= width:
                     point[0] = 0
@@ -118,7 +118,7 @@ class Snake():
         else:
             for point in snake:
                 if(point[0]>=width or point[0]<= -16 or point[1]>=height or point[1]<=-16):
-                    game.over()
+                    Game.over()
 
     def change_color(self,score):
         if(score.total<30):
@@ -145,7 +145,7 @@ class Snake():
                 count+=1
 
         if(count!=0 and len(self.body)>3):
-            game.over()
+            Game.over()
 
 
 class Score():
@@ -171,7 +171,7 @@ class Score():
         screen.blit(self.text, self.textRect)
 
     def HighScore(self):
-        if(game.borders == False):
+        if(Game.borders == False):
             # opening file which stores highscores
             with open('./High_Scores/Without_borders.txt', 'r') as f:
                 try:
@@ -252,9 +252,6 @@ class Menu():
         headin=f.render(str,True,(255,55,155))
         screen.blit(headin,(100,-10))
 
-    
-    
-        
     @staticmethod
     def button(msg,x,y,w,h,ic,ac,action=None):
         global borders
@@ -265,7 +262,7 @@ class Menu():
             pygame.draw.rect(screen, ac,(x,y,w,h))
             if click[0] and action!= None:
                 if (action=="play"):
-                    game.play()
+                    Game.play()
                 elif (action=="speed"):
                     Menu.speed()
                 elif (action=="slow"):
@@ -284,42 +281,42 @@ class Menu():
                     Menu.modes()
 
                 elif (action=="with borders"):
-                    game.borders=True
+                    Game.borders=True
                     Menu.main()
 
                 elif (action=="without borders"):
-                    game.borders=False
+                    Game.borders=False
                     Menu.main()
 
                 elif (action=="pause"):
-                    game.pause=True
+                    Game.pause=True
 
                 elif (action=="resume"):
-                    game.pause=False
+                    Game.pause=False
 
                 elif(action=="bgm"):
                     Menu.bgmusic()
 
                 elif (action=="funky"):
-                    bgm='./Sounds/bgm.wav'
-                    mixer.music.load(bgm)
+                    Game.bgm='./Sounds/bgm.wav'
+                    mixer.music.load(Game.bgm)
                     mixer.music.play(-1)
                     Menu.main()
 
                 elif (action=="calm"):
-                    bgm='./Sounds/bgm3.wav'
-                    mixer.music.load(bgm)
+                    Game.bgm='./Sounds/bgm3.wav'
+                    mixer.music.load(Game.bgm)
                     mixer.music.play(-1)
                     Menu.main()
 
                 elif (action=="hcore"):
-                    bgm='./Sounds/bgm2.wav'
-                    mixer.music.load(bgm)
+                    Game.bgm='./Sounds/bgm2.wav'
+                    mixer.music.load(Game.bgm)
                     mixer.music.play(-1)
                     Menu.main()
 
                 elif(action=="menu"):
-                    game.pause=False
+                    Game.pause=False
                     Menu.main()
 
                 elif (action=="quit"):
@@ -346,11 +343,11 @@ class Menu():
             screen.blit(bg,(0,0))
             Menu.heading("SERPENTUS")
 
-            Menu.button("Play",405,150,70,35,white,dark_green,"play")
-            Menu.button("Modes",390,200,100,35,white,dark_green,"modes")
-            Menu.button("Speed",390,250,100,35,white,dark_green,"speed")
-            Menu.button("Music",405,300,70,35,white,dark_green,"bgm")
-            Menu.button("Quit",405,350,70,35,white,dark_green,"quit")
+            Menu.button("Play",405,120,70,35,white,dark_green,"play")
+            Menu.button("Modes",390,170,100,35,white,dark_green,"modes")
+            Menu.button("Speed",390,220,100,35,white,dark_green,"speed")
+            Menu.button("Music",395,270,90,35,white,dark_green,"bgm")
+            Menu.button("Quit",405,320,70,35,white,dark_green,"quit")
             
             pygame.display.update()
 
@@ -367,22 +364,22 @@ class Menu():
             screen.blit(bg,(0,0))
             Menu.heading("         MUSIC")
 
-            if(bgm=='./Sounds/bgm.wav'):
-                Menu.button("Funky",140,100,85,35,white,dark_green,"funky")
-                Menu.button("Calm",240,100,70,35,white,dark_green,"calm")
-                Menu.button("Hardcore",330,100,130,35,white,dark_green,"hcore")
+            if(Game.bgm=='./Sounds/bgm.wav'):
+                Menu.button("Funky",170,70,85,35,dark_green,dark_green,"funky")
+                Menu.button("Calm",270,70,70,35,white,dark_green,"calm")
+                Menu.button("Hardcore",360,70,130,35,white,dark_green,"hcore")
             
-            if(bgm=='./Sounds/bgm2.wav'):
-                Menu.button("Funky",140,100,85,35,white,dark_green,"funky")
-                Menu.button("Calm",240,100,70,35,white,dark_green,"calm")
-                Menu.button("Hardcore",330,100,130,35,white,dark_green,"hcore")
+            elif(Game.bgm=='./Sounds/bgm2.wav'):
+                Menu.button("Funky",170,70,85,35,white,dark_green,"funky")
+                Menu.button("Calm",270,70,70,35,white,dark_green,"calm")
+                Menu.button("Hardcore",360,70,130,35,dark_green,dark_green,"hcore")
             
-            if(bgm=='./Sounds/bgm3.wav'):
-                Menu.button("Funky",140,100,85,35,white,dark_green,"funky")
-                Menu.button("Calm",240,100,70,35,white,dark_green,"calm")
-                Menu.button("Hardcore",330,100,130,35,white,dark_green,"hcore")
+            elif(Game.bgm=='./Sounds/bgm3.wav'):
+                Menu.button("Funky",170,70,85,35,white,dark_green,"funky")
+                Menu.button("Calm",270,70,70,35,dark_green,dark_green,"calm")
+                Menu.button("Hardcore",360,70,130,35,white,dark_green,"hcore")
             
-            Menu.button("Back",490,100,70,35,white,dark_green,"back")
+            Menu.button("Back",520,70,70,35,white,dark_green,"back")
             
 
             pygame.display.update()
@@ -431,7 +428,7 @@ class Menu():
             screen.blit(bg,(0,0))
             Menu.heading("MODES")
 
-            if(game.borders==True):
+            if(Game.borders==True):
                 Menu.button("With borders",150,150,200,35,dark_green,dark_green,"with borders")
                 Menu.button("Without borders",125,200,250,35,white,dark_green,"without borders") 
             else:
@@ -441,12 +438,13 @@ class Menu():
             pygame.display.update()
 
 
-class game():
+class Game():
     borders=False
     pause=False
+    bgm='./Sounds/bgm.wav'
 
     pygame.display.set_caption("SERPENTUS")
-    icon=pygame.image.load("anaconda.png")
+    icon=pygame.image.load("./Images/anaconda.png")
     pygame.display.set_icon(icon)
 
     @staticmethod
@@ -471,7 +469,7 @@ class game():
             screen.blit(bgg,(0,0))
             # screen.fill(white)
 
-            game.Pause()
+            Game.Pause()
 
             score.display()
                 
@@ -500,15 +498,16 @@ class game():
 
     @staticmethod
     def Pause():
-        if(game.pause==False):
+        if(Game.pause==False):
             Menu.button("Pause",width-100,0,100,20,white,dark_green,"pause")
             
-        if(game.pause==True):
+        if(Game.pause==True):
             Menu.button("Resume",width-220,0,120,25,white,dark_green,"resume")
             Menu.button("Menu",width-350,0,80,25,white,dark_green,"menu")
             snake.x_inc=0
             snake.y_inc=0
 
+    @staticmethod
     def over():
         mixer.music.pause()
         go_sound=mixer.Sound("./Sounds/go.wav")
@@ -525,4 +524,4 @@ class game():
         Menu.main()
 
 if(__name__ == '__main__'):
-    game.begin()
+    Game.begin()
