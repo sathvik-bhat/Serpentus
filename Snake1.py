@@ -378,6 +378,10 @@ class game():
     borders=False
     pause=False
 
+    pygame.display.set_caption("SERPENTUS")
+    icon=pygame.image.load("anaconda.png")
+    pygame.display.set_icon(icon)
+    
     @staticmethod
     def begin():
         pygame.init()
