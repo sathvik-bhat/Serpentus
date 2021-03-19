@@ -2,7 +2,6 @@ import pygame
 import time
 import random
 from pygame import mixer
-pygame.init()
 
 # screen
 width = 800
@@ -22,13 +21,14 @@ dark_red=(255,0,0)
 light_blue=(0,0,100)
 dark_blue=(0,0,255)
 
+
 class Snake():
     # snake body is represented as
     # [Tail, n-1th part, n-2th part,............2nd turn, 1st turn, Head]
     # For every movement, a new element is added at the and which becomes the head
     # and current tail is removed and the first element becomes the new tail    
 
-    speed = 0.3
+    speed = 0.33
 
     def __init__(self):
         self.colour = "red"
@@ -55,29 +55,30 @@ class Snake():
                 return 'l'
 
     def movement(self, event):   # Identifies key inputs and changes x_inc and y_inc
-        if event.key == pygame.K_LEFT:
-            if(self.prev_dir!='r'):
-                self.x_inc = -16
-                self.y_inc = 0
-                self.prev_dir='l'
+        if(game.pause==False):
+            if event.key == pygame.K_LEFT:
+                if(self.prev_dir!='r'):
+                    self.x_inc = -16
+                    self.y_inc = 0
+                    self.prev_dir='l'
 
-        elif event.key == pygame.K_RIGHT:
-            if(self.prev_dir!='l'):
-                self.x_inc = 16
-                self.y_inc = 0
-                self.prev_dir='r'
+            elif event.key == pygame.K_RIGHT:
+                if(self.prev_dir!='l'):
+                    self.x_inc = 16
+                    self.y_inc = 0
+                    self.prev_dir='r'
 
-        elif event.key == pygame.K_UP:
-            if(self.prev_dir!='d'):
-                self.y_inc = -16
-                self.x_inc = 0
-                self.prev_dir='u'
+            elif event.key == pygame.K_UP:
+                if(self.prev_dir!='d'):
+                    self.y_inc = -16
+                    self.x_inc = 0
+                    self.prev_dir='u'
 
-        elif event.key == pygame.K_DOWN:
-            if(self.prev_dir!='u'):
-                self.y_inc = 16
-                self.x_inc = 0
-                self.prev_dir='d'
+            elif event.key == pygame.K_DOWN:
+                if(self.prev_dir!='u'):
+                    self.y_inc = 16
+                    self.x_inc = 0
+                    self.prev_dir='d'
 
     def move_one_step(self):  # moves the sname by one step depending on x_inc and y_inc
         snake=self.body
@@ -116,16 +117,7 @@ class Snake():
         else:
             for point in snake:
                 if(point[0]>=width or point[0]<= -16 or point[1]>=height or point[1]<=-16):
-                    mixer.music.pause()
-                    go_sound=mixer.Sound("./Sounds/go.wav")
-                    go_sound.play()
-                    over=pygame.font.Font('./Fonts/valianttimesexpand.ttf',80)
-                    overt=over.render('GAME OVER',True,(220,20,60))
-                    screen.blit(overt,(250,180))
-                    pygame.display.update()
-                    time.sleep(3)
-                    mixer.music.play(-1)
-                    game.menu()
+                    game.over()
 
     def change_color(self,score):
         if(score.total<30):
@@ -136,7 +128,6 @@ class Snake():
             self.colour=dark_red
         else:
             self.colour=dark_blue
-
 
     def display(self):  # Displays the snake on the screen
         snake=self.body
@@ -152,20 +143,9 @@ class Snake():
             if(self.body[-1]==self.body[i]):
                 count+=1
 
-        if(count!=0):
-            mixer.music.pause()
-            go_sound=mixer.Sound("./Sounds/go.wav")
-            go_sound.play()
-            over=pygame.font.Font('./Fonts/valianttimesexpand.ttf',80)
-            overt=over.render('GAME OVER',True,(220,20,60))
-            screen.blit(overt,(250,180))
-            h_score = pygame.font.Font('./Fonts/valianttimes3d.ttf', 80)
-            h_score1 = h_score.render('HIGH SCORE: ' + str(score.HighScore()), True, (0, 0, 255))
-            screen.blit(h_score1, (50, 50))
-            pygame.display.update()
-            time.sleep(3)
-            mixer.music.play(-1)
-            game.menu()
+        if(count!=0 and len(self.body)>3):
+            game.over()
+
 
 class Score():
 
@@ -190,20 +170,38 @@ class Score():
         screen.blit(self.text, self.textRect)
 
     def HighScore(self):
-        # opening file which stores highscores
-        with open('./highscore.txt', 'r') as f:
-            try:
-                highscore = int(f.read())
-            except:
-                highscore = 0
+        if(game.borders == False):
+            # opening file which stores highscores
+            with open('./High_Scores/Without_borders.txt', 'r') as f:
+                try:
+                    highscore = int(f.read())
+                except:
+                    highscore = 0
 
-        # writing new highscore into file
-        if (self.total >= highscore):
-            highscore = self.total
-            with open('./highscore.txt', 'w') as f:
-                f.write(str(highscore))
+            # writing new highscore into file
+            if (self.total >= highscore):
+                highscore = self.total
+                with open('./High_Scores/Without_borders.txt', 'w') as f:
+                    f.write(str(highscore))
 
-        return highscore
+            return highscore
+
+        else:
+            # opening file which stores highscores
+            with open('./High_Scores/With_borders.txt', 'r') as f:
+                try:
+                    highscore = int(f.read())
+                except:
+                    highscore = 0
+
+            # writing new highscore into file
+            if (self.total >= highscore):
+                highscore = self.total
+                with open('./High_Scores/With_borders.txt', 'w') as f:
+                    f.write(str(highscore))
+
+            return highscore
+
 
 class Food():
     # loading food images
@@ -218,7 +216,8 @@ class Food():
 
     def respawn(self):
         if self.food_spawn is False:  # When a food is taken it will respawn randomly
-            self.weighted_list = random.choices([1, 2, 3, 4], weights=(40, 30, 20, 10), k=1)  # implementing different foods with different probabilities of occuring. fruit with lower points has a higher chance of occuring
+            # implementing different foods with different probabilities of occuring. fruit with lower points has a higher chance of occuring
+            self.weighted_list = random.choices([1, 2, 3, 4], weights=(40, 30, 20, 10), k=1)  
             self.n = self.weighted_list[0]
             self.food_position = [random.randint( 1, width/16 - 1) *16 , random.randint(1, height/16 - 1) *16 ]
             while (self.food_position in snake.add_new()):
@@ -234,7 +233,7 @@ class Food():
             snake.add_new()
             self.food_spawn = False  # It removes the food from the board
             
-    def display(self):
+    def display(self): # Displays the food images on the screen
         if (self.n == 1):
             screen.blit(Food.apple, (self.food_position))
         elif (self.n == 2):
@@ -245,57 +244,135 @@ class Food():
             screen.blit(Food.strawberry, (self.food_position))
 
 
-def heading(str):
-    f=pygame.font.Font('./Fonts/Chopsic-K6Dp.ttf',80)
-    headin=f.render(str,True,(255,55,155))
-    screen.blit(headin,(120,-10))
+class Menu():
+    @staticmethod
+    def heading(str):
+        f=pygame.font.Font('./Fonts/Chopsic-K6Dp.ttf',80)
+        headin=f.render(str,True,(255,55,155))
+        screen.blit(headin,(100,-10))
 
-def button(msg,x,y,w,h,ic,ac,action=None):
-    global borders
-    mouse=pygame.mouse.get_pos()
-    click=pygame.mouse.get_pressed()
+    @staticmethod
+    def button(msg,x,y,w,h,ic,ac,action=None):
+        global borders
+        mouse=pygame.mouse.get_pos()
+        click=pygame.mouse.get_pressed()
 
-    if x+w>mouse[0]>x and y+h>mouse[1]>y:
-        pygame.draw.rect(screen, ac,(x,y,w,h))
-        if click[0] and action!= None:
-            if action=="play":
-                game.play()
-            if action=="speed":
-                game.speed()
-            if(action=="slow"):
-                Snake.speed = 0.2
-                game.menu()
-            if(action=="medium"):
-                Snake.speed = 0.3
-                game.menu()
-            if(action=="fast"):
-                Snake.speed = 0.4
-                game.menu()
-            if(action=="back"):
-                game.menu()
-            if(action=="modes"):
-                game.modes()
-            if(action=="with borders"):
-                game.borders=True
-                game.menu()
-            if(action=="without borders"):
-                game.borders=False
-                game.menu()
-            if(action=="pause"):
-                game.pause=True
-            if(action=="resume"):
-                game.pause=False
-            if action=="quit":
-                pygame.quit()
-                quit()
-    else:
-        pygame.draw.rect(screen, ic,(x,y,w,h))
-    
-    textg=pygame.font.Font('./Fonts/Chango-Regular.ttf', 20)
-    textsurf=textg.render(msg,True,red)
-    textrect=textsurf.get_rect()
-    textrect.center=((x+(w/2)), (y+(h/2)))
-    screen.blit(textsurf,textrect)
+        if x+w>mouse[0]>x and y+h>mouse[1]>y:
+            pygame.draw.rect(screen, ac,(x,y,w,h))
+            if click[0] and action!= None:
+                if (action=="play"):
+                    game.play()
+                elif (action=="speed"):
+                    Menu.speed()
+                elif (action=="slow"):
+                    Snake.speed = 0.25
+                    Menu.main()
+                elif (action=="medium"):
+                    Snake.speed = 0.33
+                    Menu.main()
+                elif (action=="fast"):
+                    Snake.speed = 0.43
+                    Menu.main()
+                elif (action=="back"):
+                    Menu.main()
+                elif (action=="modes"):
+                    Menu.modes()
+                elif (action=="with borders"):
+                    game.borders=True
+                    Menu.main()
+                elif (action=="without borders"):
+                    game.borders=False
+                    Menu.main()
+                elif (action=="pause"):
+                    game.pause=True
+                elif (action=="resume"):
+                    game.pause=False
+                elif(action=="menu"):
+                    game.pause=False
+                    Menu.main()
+                elif (action=="quit"):
+                    pygame.quit()
+                    quit()
+        else:
+            pygame.draw.rect(screen, ic,(x,y,w,h))
+        
+        textg=pygame.font.Font('./Fonts/Chango-Regular.ttf', 20)
+        textsurf=textg.render(msg,True,red)
+        textrect=textsurf.get_rect()
+        textrect.center=((x+(w/2)), (y+(h/2)))
+        screen.blit(textsurf,textrect)
+
+    @staticmethod
+    def main():
+
+        while True:
+            for event in pygame.event.get():
+                if event.type==pygame.QUIT:
+                    pygame.quit()
+                    quit()
+            bg=pygame.image.load('./Images/bg2.png')
+            screen.blit(bg,(0,0))
+            Menu.heading("SERPENTUS")
+
+            Menu.button("Play",405,150,70,35,white,dark_green,"play")
+            Menu.button("Modes",390,200,100,35,white,dark_green,"modes")
+            Menu.button("Speed",390,250,100,35,white,dark_green,"speed")
+            Menu.button("Quit",405,300,70,35,white,dark_green,"quit")
+            
+            pygame.display.update()
+
+    @staticmethod
+    def speed():
+
+        while True:
+            for event in pygame.event.get():
+                if event.type==pygame.QUIT:
+                    pygame.quit()
+                    quit()
+
+            bg=pygame.image.load('./Images/bg2.png')
+            screen.blit(bg,(0,0))
+            Menu.heading("                    SPEED")
+
+            if(Snake.speed==0.25):
+                Menu.button("Slow",520,150,70,35,dark_green,dark_green,"slow")
+                Menu.button("Medium",500,200,120,35,white,dark_green,"medium")
+                Menu.button("Fast",520,250,70,35,white,dark_green,"fast")
+            elif(Snake.speed==0.33):
+                Menu.button("Slow",520,150,70,35,white,dark_green,"slow")
+                Menu.button("Medium",500,200,120,35,dark_green,dark_green,"medium")
+                Menu.button("Fast",520,250,70,35,white,dark_green,"fast")
+            elif(Snake.speed==0.43):
+                Menu.button("Slow",520,150,70,35,white,dark_green,"slow")
+                Menu.button("Medium",500,200,120,35,white,dark_green,"medium")
+                Menu.button("Fast",520,250,70,35,dark_green,dark_green,"fast")
+
+            Menu.button("Back",520,300,70,35,white,dark_green,"back")
+            
+            pygame.display.update()
+
+    @staticmethod
+    def modes():
+        
+        while True:
+            global boundary
+            for event in pygame.event.get():
+                if event.type==pygame.QUIT:
+                    pygame.quit()
+                    quit()
+            bg=pygame.image.load('./Images/bg2.png')
+            screen.blit(bg,(0,0))
+            Menu.heading("MODES")
+
+            if(game.borders==True):
+                Menu.button("With borders",150,150,200,35,dark_green,dark_green,"with borders")
+                Menu.button("Without borders",125,200,250,35,white,dark_green,"without borders") 
+            else:
+                Menu.button("With borders",150,150,200,35,white,dark_green,"with borders")
+                Menu.button("Without borders",125,200,250,35,dark_green,dark_green,"without borders")
+            Menu.button("Back",200,250,75,35,white,dark_green,"back")
+            pygame.display.update()
+
 
 class game():
     borders=False
@@ -303,9 +380,10 @@ class game():
 
     @staticmethod
     def begin():
+        pygame.init()
         mixer.music.load('./Sounds/bgm.wav')
         mixer.music.play(-1)    
-        game.menu()
+        Menu.main()
 
     @staticmethod
     def play():
@@ -318,9 +396,9 @@ class game():
         run = True
         while run:
                 
-            # bgg=pygame.image.load('bgg1.png')
-            # screen.blit(bgg,(0,0))
-            screen.fill(white)
+            bgg=pygame.image.load('./Images/grass.jpg')
+            screen.blit(bgg,(0,0))
+            # screen.fill(white)
 
             game.Pause()
 
@@ -350,84 +428,30 @@ class game():
             pygame.display.update()
 
     @staticmethod
-    def speed():
-
-        while True:
-            for event in pygame.event.get():
-                if event.type==pygame.QUIT:
-                    pygame.quit()
-                    quit()
-
-            bg=pygame.image.load('./Images/bg2.png')
-            screen.blit(bg,(0,0))
-            heading("                    SPEED")
-
-            if(Snake.speed==0.2):
-                button("Slow",520,150,70,35,dark_green,dark_green,"slow")
-                button("Medium",500,200,120,35,white,dark_green,"medium")
-                button("Fast",520,250,70,35,white,dark_green,"fast")
-            elif(Snake.speed==0.3):
-                button("Slow",520,150,70,35,white,dark_green,"slow")
-                button("Medium",500,200,120,35,dark_green,dark_green,"medium")
-                button("Fast",520,250,70,35,white,dark_green,"fast")
-            elif(Snake.speed==0.4):
-                button("Slow",520,150,70,35,white,dark_green,"slow")
-                button("Medium",500,200,120,35,white,dark_green,"medium")
-                button("Fast",520,250,70,35,dark_green,dark_green,"fast")
-
-            button("Back",520,300,70,35,white,dark_green,"back")
-            
-            pygame.display.update()
-
-    @staticmethod
-    def modes():
-        
-        while True:
-            global boundary
-            for event in pygame.event.get():
-                if event.type==pygame.QUIT:
-                    pygame.quit()
-                    quit()
-            bg=pygame.image.load('./Images/bg2.png')
-            screen.blit(bg,(0,0))
-            heading("MODES")
-
-            if(game.borders==True):
-                button("With borders",150,150,200,35,dark_green,dark_green,"with borders")
-                button("Without borders",125,200,250,35,white,dark_green,"without borders") 
-            else:
-                button("With borders",150,150,200,35,white,dark_green,"with borders")
-                button("Without borders",125,200,250,35,dark_green,dark_green,"without borders")
-            button("Back",200,250,75,35,white,dark_green,"back")
-            pygame.display.update()
-
-    @staticmethod
-    def menu():
-
-        while True:
-            for event in pygame.event.get():
-                if event.type==pygame.QUIT:
-                    pygame.quit()
-                    quit()
-            bg=pygame.image.load('./Images/bg2.png')
-            screen.blit(bg,(0,0))
-            heading("SERPENTUS")
-
-            button("Play",405,150,70,35,white,dark_green,"play")
-            button("Modes",390,200,100,35,white,dark_green,"modes")
-            button("Speed",390,250,100,35,white,dark_green,"speed")
-            button("Quit",405,300,70,35,white,dark_green,"quit")
-            
-            pygame.display.update()
-
-    @staticmethod
     def Pause():
         if(game.pause==False):
-            button("Pause",width-100,0,100,20,white,dark_green,"pause")
+            Menu.button("Pause",width-100,0,100,20,white,dark_green,"pause")
             
         if(game.pause==True):
-            button("Resume",width-220,0,120,20,white,dark_green,"resume")
+            Menu.button("Resume",width-220,0,120,25,white,dark_green,"resume")
+            Menu.button("Menu",width-350,0,80,25,white,dark_green,"menu")
             snake.x_inc=0
             snake.y_inc=0
 
-game.begin()
+    def over():
+        mixer.music.pause()
+        go_sound=mixer.Sound("./Sounds/go.wav")
+        go_sound.play()
+        over=pygame.font.Font('./Fonts/valianttimesexpand.ttf',80)
+        overt=over.render('GAME OVER',True,(220,20,60))
+        screen.blit(overt,(250,180))
+        h_score = pygame.font.Font('./Fonts/valianttimes3d.ttf', 80)
+        h_score1 = h_score.render('HIGH SCORE: ' + str(score.HighScore()), True, (0, 0, 255))
+        screen.blit(h_score1, (50, 50))
+        pygame.display.update()
+        time.sleep(3)
+        mixer.music.play(-1)
+        Menu.main()
+
+if(__name__ == '__main__'):
+    game.begin()
