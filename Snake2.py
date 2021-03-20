@@ -244,7 +244,8 @@ class Food():
             screen.blit(Food.strawberry, (self.food_position))
 
 
-class Menu():
+class Menu(): #Start menu 
+    
     @staticmethod
     def heading(str):
         f=pygame.font.Font('./Fonts/Chopsic-K6Dp.ttf',80)
@@ -252,14 +253,14 @@ class Menu():
         screen.blit(headin,(100,-10))
 
     @staticmethod
-    def button(msg,x,y,w,h,ic,ac,action=None):
-        global borders
+    def button(msg,x,y,w,h,ic,ac,action=None): #common function for creating buttons on the gamewindow
+        global borders                         #ic stands for inactive colour and ac stands for active color                             
         mouse=pygame.mouse.get_pos()
         click=pygame.mouse.get_pressed()
 
-        if x+w>mouse[0]>x and y+h>mouse[1]>y:
+        if x+w>mouse[0]>x and y+h>mouse[1]>y:  #if the mouse hovers on to the button we change its color from ic to ac
             pygame.draw.rect(screen, ac,(x,y,w,h))
-            if click[0] and action!= None:
+            if click[0] and action!= None:     #to make the button interactive when we click on it 
                 if (action=="play"):
                     Game.play()
                 elif (action=="speed"):
@@ -331,7 +332,7 @@ class Menu():
         screen.blit(textsurf,textrect)
 
     @staticmethod
-    def main():
+    def main():   # method for main menu(the starting menu)
 
         while True:
             for event in pygame.event.get():
@@ -352,7 +353,7 @@ class Menu():
 
     
     @staticmethod
-    def bgmusic():
+    def bgmusic():   #mthod for background music sub menu
         while True:
             for event in pygame.event.get():
                 if event.type==pygame.QUIT:
@@ -362,7 +363,7 @@ class Menu():
             bg=pygame.image.load('./Images/bg2.png')
             screen.blit(bg,(0,0))
             Menu.heading("         MUSIC")
-
+           
             if(Game.bgm=='./Sounds/bgm.wav'):
                 Menu.button("Funky",170,70,85,35,dark_green,dark_green,"funky")
                 Menu.button("Calm",270,70,70,35,white,dark_green,"calm")
@@ -384,7 +385,7 @@ class Menu():
 
 
     @staticmethod
-    def speed():
+    def speed():      #method for adjusting the speed sub menu
 
         while True:
             for event in pygame.event.get():
@@ -414,7 +415,7 @@ class Menu():
             pygame.display.update()
 
     @staticmethod
-    def modes():
+    def modes():    # method for the different modes sub menu
         
         while True:
             global boundary
@@ -436,7 +437,7 @@ class Menu():
             pygame.display.update()
 
 
-class Game():
+class Game():    #this class basically calls all the other class methods and instantiates other class objects to run our game 
     borders=False
     pause=False
     bgm='./Sounds/bgm.wav'
